@@ -1,68 +1,77 @@
 print("Park Run Timer\n")
 print("~~~~~~~~~~~~~~\n")
-print("let's go!")
+print("Let's go!")
 
-time_sum=0
-counter=0
-while(True):
-  data_stream=input("enter runners number with time:")
-  if (data_stream =="END"):
-     break
-  runnerid_time=data_stream.split("::")
-    
-  if (data_stream==""):
-      print("END")
-      print("no data found,nothing to do, what a shame")
-  
-  
-  if (len(runnerid_time)>2):
-      print("invalid format")
-      break
-            
-  if (runnerid_time[0]=="" or runnerid_time[1] ==""):
-    print("Error in data stream. Ignorning. Carry on.")
-    
-  else:
-    player_time=runnerid_time[1]
-    player_number=runnerid_time[0]
-        
-    if(counter==0):
-        fastest=data_stream
-        fastest_time=int(runnerid_time[1])
-        slowest_time=int(runnerid_time[1]) 
+time_sum = 0
+counter = 0
+fastest_time = None
+slowest_time = None
+fastest = ""
+slowest = ""
 
-        
-    if(fastest_time>int(runnerid_time[1])):
-      fastest_time=int(runnerid_time[1])
-      fastest=data_stream
-            
-    if(slowest_time<int(runnerid_time[1])):
-       slowest_time=int(runnerid_time[1])
-       slowest=data_stream
+while True:
+    data_stream = input("Enter runner's number with time (e.g. 101::320): ")
 
-    counter+=1
-    
-    time_sum+=int(runnerid_time[0])    
-    average_time=time_sum/counter
+    if data_stream == "END":
+        break
 
-fastest_time_minutes=fastest_time//60
-fastest_time_seconds=(fastest_time)-(fastest_time_minutes*60)
+    if not data_stream.strip():
+        print("No data entered. Please try again.")
+        continue
 
-slowest_time_minutes=slowest_time//60
-slowest_time_seconds=(slowest_time)-(slowest_time_minutes*60)
+    runnerid_time = data_stream.split("::")
 
-average_time_minutes=int(average_time//60)
-average_time_seconds=int(average_time)-int(average_time_minutes*60)
+    if len(runnerid_time) != 2:
+        print("Invalid format. Please use RunnerID::Time.")
+        continue
 
-total_runners=counter
+    player_number, player_time = runnerid_time[0].strip(), runnerid_time[1].strip()
 
-fastest_id=fastest.split("::")
-fastest_id=fastest[:2]
+    if not player_number or not player_time.isdigit():
+        print("Error in data stream. Ignoring. Carry on.")
+        continue
 
-print("\n")
-print("total_runners:{}".format(total_runners))
-print("average_time:{} minute, {} seconds".format(average_time_minutes,average_time_seconds))
-print("fastest_time:{} minute,{} seconds".format(fastest_time_minutes,fastest_time_seconds))
-print("slowest_time:{} minute,{} seconds".format(slowest_time_minutes,slowest_time_seconds))
-print("\n")
-print("best_time_here:Runner #{}".format(fastest_id))
+    player_time = int(player_time)
+
+    if counter == 0:
+        fastest_time = player_time
+        slowest_time = player_time
+        fastest = data_stream
+        slowest = data_stream
+
+    if player_time < fastest_time:
+        fastest_time = player_time
+        fastest = data_stream
+
+    if player_time > slowest_time:
+        slowest_time = player_time
+        slowest = data_stream
+
+    counter += 1
+    time_sum += player_time
+
+# Handle case where no valid runners were entered
+if counter == 0:
+    print("\nNo data found, nothing to do. What a shame!")
+else:
+    average_time = time_sum / counter
+
+    # Convert to minutes and seconds
+    def convert_time(seconds):
+        return seconds // 60, seconds % 60
+
+    fastest_time_minutes, fastest_time_seconds = convert_time(fastest_time)
+    slowest_time_minutes, slowest_time_seconds = convert_time(slowest_time)
+    average_time_minutes, average_time_seconds = convert_time(int(average_time))
+
+    total_runners = counter
+    fastest_id = fastest.split("::")[0]
+
+    # Results
+    print("\nResults Summary")
+    print("----------------")
+    print("Total runners: {}".format(total_runners))
+    print("Average time: {} minute(s), {} second(s)".format(average_time_minutes, average_time_seconds))
+    print("Fastest time: {} minute(s), {} second(s)".format(fastest_time_minutes, fastest_time_seconds))
+    print("Slowest time: {} minute(s), {} second(s)".format(slowest_time_minutes, slowest_time_seconds))
+    print("\nBest time here: Runner #{}".format(fastest_id))
